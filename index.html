@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OrganChain • Live Organ Tracking</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <!-- Ethers v6 (UMD) -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🔗</span>
+      <div>
+        <div class="brand-title">OrganChain</div>
+        <div class="brand-sub">Live Tracker Dashboard</div>
+      </div>
+    </div>
+
+    <div class="search-wrap">
+      <input id="searchInput" class="search" placeholder="Search organ ID…" />
+      <button id="btnSearch" class="btn btn-dark">Search</button>
+    </div>
+
+    <div class="wallet-wrap">
+      <div id="networkTag" class="tag">Not connected</div>
+      <button id="btnConnect" class="btn btn-primary">Connect Wallet</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1 class="page-title">Live Organ Tracking Dashboard</h1>
+    <p class="page-sub">Real-time monitoring and management of organ transplant logistics</p>
+
+    <!-- KPI cards -->
+    <section class="kpi-grid">
+      <div class="kpi kpi-blue">
+        <div class="kpi-title">Total Organs</div>
+        <div id="kpiTotal" class="kpi-value">0</div>
+      </div>
+      <div class="kpi kpi-amber">
+        <div class="kpi-title">In Transit</div>
+        <div id="kpiTransit" class="kpi-value">0</div>
+      </div>
+      <div class="kpi kpi-green">
+        <div class="kpi-title">Transplanted</div>
+        <div id="kpiTransplanted" class="kpi-value">0</div>
+      </div>
+      <div class="kpi kpi-red">
+        <div class="kpi-title">Critical</div>
+        <div id="kpiCritical" class="kpi-value">0</div>
+      </div>
+    </section>
+
+    <section class="main-grid">
+      <!-- Map / coordinates panel -->
+      <div class="card map-card">
+        <div class="card-title">
+          <span>Live Tracking Map</span>
+          <small id="activeShipments" class="muted">0 active shipments</small>
+        </div>
+        <div id="map" class="map">
+          <!-- Simple grid “map” (SVG). We’ll plot pins relative to bounds shown below. -->
+          <svg id="mapSvg" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+        <div class="legend">
+          <span class="dot dot-amber"></span> In Transit
+          <span class="dot dot-blue"></span> At Location
+          <span class="dot dot-green"></span> Transplanted
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="card actions-card">
+        <div class="card-title">Quick Actions</div>
+
+        <div class="action">
+          <h4>Procure Organ</h4>
+          <label>Organ ID</label>
+          <input id="p_id" placeholder="e.g. ORG-2025-001" />
+          <div class="row">
+            <div>
+              <label>Latitude</label>
+              <input id="p_lat" placeholder="e.g. 40.7128" />
+            </div>
+            <div>
+              <label>Longitude</label>
+              <input id="p_lng" placeholder="e.g. -74.0060" />
+            </div>
+          </div>
+          <button id="btnProcure" class="btn btn-primary full">Procure</button>
+        </div>
+
+        <div class="action">
+          <h4>Update Location</h4>
+          <label>Organ ID</label>
+          <input id="u_id" placeholder="existing organ id" />
+          <div class="row">
+            <div>
+              <label>Latitude</label>
+              <input id="u_lat" placeholder="e.g. 34.0522" />
+            </div>
+            <div>
+              <label>Longitude</label>
+              <input id="u_lng" placeholder="e.g. -118.2437" />
+            </div>
+          </div>
+          <button id="btnUpdate" class="btn btn-amber full">Update Location</button>
+        </div>
+
+        <div class="action">
+          <h4>Confirm Transplant</h4>
+          <label>Organ ID</label>
+          <input id="t_id" placeholder="existing organ id" />
+          <button id="btnTransplant" class="btn btn-green full">Confirm</button>
+        </div>
+
+        <div class="action">
+          <h4>View Organ Details</h4>
+          <label>Organ ID</label>
+          <input id="v_id" placeholder="existing organ id" />
+          <button id="btnView" class="btn btn-dark full">Fetch</button>
+
+          <div id="viewResult" class="result"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tables -->
+    <section class="card">
+      <div class="card-title with-tabs">
+        <div>All Organs</div>
+        <div class="tabs">
+          <button class="tab active" data-filter="all">All</button>
+          <button class="tab" data-filter="Procured">Procured</button>
+          <button class="tab" data-filter="In Transit">In Transit</button>
+          <button class="tab" data-filter="At Hospital">At Hospital</button>
+          <button class="tab" data-filter="Transplanted">Transplanted</button>
+        </div>
+      </div>
+
+      <div id="organsGrid" class="organs-grid">
+        <!-- Cards get injected here -->
+      </div>
+      <div id="emptyState" class="empty">
+        <div class="empty-icon">📦</div>
+        <div class="empty-title">No organs found</div>
+        <div class="empty-sub">Try another filter or add a new organ.</div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
